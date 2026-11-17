@@ -1,0 +1,1007 @@
+<title>Huella Vet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Layout: barra lateral fija + cabecera con tasa BCV siempre visible + vistas de trabajo por módulo */
+:root{
+  color-scheme:light;
+  --bg:#f2f5f5; --surface:#ffffff; --surface2:#f5f8f8; --ink:#17302f; --mut:#617777; --line:#dce6e5;
+  --side:#0f4f4f; --coral:#dd4f33; --coral-soft:#ffe8e2;
+  --accent:#0f7a73; --accent-ink:#0b4f4a; --accent-soft:#e0f2f0; --accent-pastel:#cfe9e6;
+  --bs:#a8590a; --bs-soft:#fff2dd;
+  --ok:#1f7a45; --ok-soft:#ddf3e5; --warn:#8a5d05; --warn-soft:#fdf0cc; --bad:#b83a30; --bad-soft:#fde2df;
+  --sp-perro:#d9923b; --sp-gato:#7b7fd1; --sp-ave:#3fa7d6; --sp-roedor:#e0749b; --sp-reptil:#5fae5f; --sp-exotico:#9b6fd0;
+  --chart1:#2a9d94; --chart2:#f08a73;
+  --shadow:0 1px 2px rgba(15,48,47,.05);
+  --f-head:'Manrope',system-ui,sans-serif; --f-body:'Inter',system-ui,sans-serif;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);padding-block:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-head);margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);gap:20px;max-width:1360px;margin:0 auto;padding-block:16px}
+
+/* Sidebar */
+aside{position:sticky;top:16px;align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 12px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px}
+.brand svg{flex:none}
+.brand b{font:800 19px var(--f-head);letter-spacing:-.3px}
+.brand small{display:block;color:var(--mut);font-size:11px;margin-top:-2px}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:9px 10px;border-radius:10px;color:var(--mut);font-weight:500}
+nav button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button:hover{background:var(--surface2);color:var(--ink)}
+nav button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav .grp{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding:14px 10px 4px}
+.me{margin-top:16px;padding:10px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.av{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:700 13px var(--f-head);flex:none}
+.me small{color:var(--mut);display:block;line-height:1.2}
+
+/* Header */
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.top .ttl{flex:1;min-width:200px}
+.top h1{font-size:24px;letter-spacing:-.4px}
+.top p{margin:2px 0 0;color:var(--mut)}
+.rate{display:flex;align-items:center;gap:10px;background:var(--bs-soft);border:1px solid color-mix(in srgb,var(--bs) 30%,transparent);border-radius:14px;padding:8px 14px}
+.rate .l{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--bs);font-weight:600;line-height:1.2}
+.rate .l span{display:block;text-transform:none;letter-spacing:0;font-weight:400;color:var(--mut)}
+.rate .v{display:flex;align-items:center;gap:4px;font:800 18px var(--f-head);color:var(--bs)}
+.rate input{width:92px;font:800 18px var(--f-head);color:var(--bs);background:var(--surface);border:1px solid color-mix(in srgb,var(--bs) 35%,transparent);border-radius:8px;padding:3px 6px;text-align:right}
+.demo{background:var(--surface);border:1px dashed var(--line);color:var(--mut);border-radius:10px;padding:6px 12px;font-size:12px;margin-bottom:14px}
+.demo b{color:var(--ink)}
+
+/* Components */
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px}
+.two{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr)}
+td small{font-size:12px}
+.even{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);min-width:0}
+.card h3{font-size:15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3 a{font:500 12px var(--f-body);color:var(--accent)}
+.kpi .k{color:var(--mut);font-size:12px}
+.kpi .usd{font:800 26px var(--f-head);letter-spacing:-.5px;margin-top:2px}
+.kpi .bs{color:var(--bs);font-weight:600;font-size:13px}
+.kpi .d{font-size:12px;margin-top:4px;color:var(--mut)}
+.up{color:var(--ok)}.dn{color:var(--bad)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.p-ok{background:var(--ok-soft);color:var(--ok)}.p-warn{background:var(--warn-soft);color:var(--warn)}.p-bad{background:var(--bad-soft);color:var(--bad)}.p-info{background:var(--accent-soft);color:var(--accent)}
+.sp{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.sp i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);text-align:left;font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover{background:var(--surface2)}
+tbody tr.sel{background:var(--accent-soft)}
+.bsv{color:var(--bs);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 14px;font-weight:600}
+.btn:hover{background:var(--surface2)}
+.btn.p{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.p:hover{filter:brightness(1.07)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--mut);font-weight:500}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.view{display:none}.view.on{display:block}
+.bar{height:8px;border-radius:6px;background:var(--surface2);overflow:hidden;min-width:70px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.bar.low i{background:var(--bad)}.bar.mid i{background:var(--warn)}
+.hbar{display:grid;grid-template-columns:165px 1fr auto;gap:10px;align-items:center;margin:10px 0}
+.hbar .bar{height:10px}
+
+/* Agenda */
+.ag{display:grid;grid-template-columns:48px repeat(3,minmax(150px,1fr));min-width:640px}
+.ag .hd{padding:8px;font-weight:600;border-bottom:1px solid var(--line);font-family:var(--f-head)}
+.ag .hd small{display:block;color:var(--mut);font-weight:400;font-family:var(--f-body)}
+.ag .hrs div{height:64px;font-size:11px;color:var(--mut);padding-top:2px;border-top:1px solid var(--line)}
+.ag .col{position:relative;height:576px;border-left:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0 63px,var(--line) 63px 64px)}
+.ev{position:absolute;left:5px;right:5px;border-radius:10px;padding:6px 9px;font-size:12px;line-height:1.3;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 14%,var(--surface));overflow:hidden}
+.ev b{display:block;font-size:12.5px}.ev span{color:var(--mut)}
+
+/* Ficha */
+.split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,1fr);gap:14px;align-items:start}
+.ficha{position:sticky;top:16px}
+.fh{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.pa{width:64px;height:64px;border-radius:18px;background:var(--c);color:#fff;display:grid;place-items:center;font:800 26px var(--f-head);flex:none}
+.fh h2{font-size:21px;letter-spacing:-.3px}
+.fh small{color:var(--mut)}
+.id{font:600 12px ui-monospace,Menlo,monospace;background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--mut)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin-bottom:14px}
+.facts div{font-size:12.5px}.facts span{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.sub{font:700 12px var(--f-head);text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin:14px 0 6px}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:62px 1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.tl li:last-child{border:0}.tl time{color:var(--mut);font-size:12px}
+.bal{display:flex;justify-content:space-between;gap:10px;background:var(--surface2);border-radius:12px;padding:10px 12px;margin-top:12px;flex-wrap:wrap}
+.bal b{font:800 16px var(--f-head)}
+
+/* Caja */
+.pos{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr);gap:14px;align-items:start}
+.line{display:grid;grid-template-columns:minmax(0,1fr) auto 84px 96px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border:0}
+.line small{color:var(--mut);display:block}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.step button{border:0;background:var(--surface2);width:28px;height:28px;font-weight:700}
+.step span{width:30px;text-align:center;font-weight:600}
+.tot{background:linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#06302c));color:var(--accent-ink);border-radius:16px;padding:18px}
+.tot .r{display:flex;justify-content:space-between;gap:10px;opacity:.9;font-size:13px;margin-top:4px}
+.tot .big{font:800 32px var(--f-head);letter-spacing:-.8px;margin-top:2px}
+.tot hr{border:0;border-top:1px solid rgba(255,255,255,.28);margin:12px 0}
+.tot .bsbig{font:800 30px var(--f-head);letter-spacing:-.6px}
+.methods{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.m{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 10px;text-align:left;font-weight:600;font-size:13px}
+.m small{display:block;font-weight:400;color:var(--mut)}
+.m.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.rec{font:12px ui-monospace,Menlo,monospace;color:var(--mut);border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:12px;line-height:1.6}
+.rec b{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+/* Donut */
+.donut{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.dn-r{width:140px;height:140px;border-radius:50%;flex:none;display:grid;place-items:center}
+.dn-r div{width:88px;height:88px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font:800 22px/1 var(--f-head)}
+.dn-r small{display:block;font:400 11px var(--f-body);color:var(--mut)}
+.leg{display:grid;gap:6px;font-size:13px;flex:1;min-width:150px}.leg div{display:flex;justify-content:space-between;gap:10px}
+
+@media (max-width:1000px){.two,.split,.pos{grid-template-columns:1fr}.ficha{position:static}}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;padding:10px}
+  .brand{padding-bottom:8px}
+  nav{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:2px}
+  nav .grp{display:none}
+  nav button{white-space:nowrap;padding:8px 12px}
+  .me{display:none}
+  .hbar{grid-template-columns:110px 1fr auto}
+  .line{grid-template-columns:minmax(0,1fr) auto;}
+  .line .a,.line .b{text-align:right}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+aside{max-height:calc(100vh - 32px);overflow-y:auto}
+.sw{display:inline-block;width:38px;height:22px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;flex:none;transition:.2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on{background:var(--accent)}.sw.on::after{left:19px}
+.row2{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row2:last-child{border:0}.row2 small{display:block;color:var(--mut)}
+.hosp{display:flex;flex-direction:column;gap:8px}
+.hosp .hh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.hosp .box{font:700 11px var(--f-head);letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.hosp.free{align-items:center;justify-content:center;text-align:center;color:var(--mut);border-style:dashed;min-height:150px}
+.search{width:100%;max-width:340px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;margin-bottom:12px}
+.fclose,.appbar,.tabbar,.drawer,.scrim{display:none}
+
+/* ===== Móvil ===== */
+@media (max-width:820px){
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:41}
+  .app{display:block;padding-block:0}
+  aside{display:none}
+  main{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .appbar{display:flex;align-items:center;gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .ibtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+  .ibtn svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
+  .abrand{display:flex;align-items:center;gap:8px;font:800 16px var(--f-head);letter-spacing:-.2px;min-width:0}
+  .abrand svg{width:26px;height:26px}
+  .abt{margin-left:auto;color:var(--mut);font-size:12.5px;font-weight:500;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+  .tabbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--mut);padding:5px 0;font-weight:500;border-radius:10px}
+  .tabbar button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .tabbar button.on{color:var(--accent);background:var(--accent-soft)}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(5,20,22,.55);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .drawer{display:block;position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--surface);border-radius:22px 22px 0 0;max-height:88%;overflow-y:auto;transform:translateY(105%);visibility:hidden;transition:transform .25s,visibility .25s;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  .drawer.on{transform:none;visibility:visible}
+  .drawer .grab{width:40px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 12px}
+  .drawer .dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .drawer .dh b{font:800 18px var(--f-head)}
+  .dg{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:14px 2px 8px;font-weight:600}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .tile{border:1px solid var(--line);background:var(--surface2);border-radius:14px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:500;text-align:center;line-height:1.2}
+  .tile svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .tile.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);font-weight:600}
+  .dme{display:flex;gap:10px;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+  .dme small{display:block;color:var(--mut)}
+
+  .top{margin-bottom:10px}.top h1{font-size:21px}.top p{font-size:13px}
+  .rate{width:100%;justify-content:space-between;padding:8px 12px}
+  .rate input{font-size:16px}
+  .demo{font-size:11.5px;padding:6px 10px}
+  .card{padding:14px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .kpi .usd{font-size:21px}.kpi .bs{font-size:12px}
+  .even{grid-template-columns:minmax(0,1fr)}
+  .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin-inline:-2px}
+  .chip{white-space:nowrap;flex:none}
+  .card h3{flex-wrap:wrap}
+  .hbar{grid-template-columns:104px 1fr auto}
+  .ag{min-width:0}
+
+  table.stack thead{display:none}
+  table.stack,table.stack tbody{display:block}
+  table.stack tr{display:block;border:1px solid var(--line);border-radius:12px;padding:4px 12px;margin-bottom:10px;background:var(--surface)}
+  table.stack tr.sel{border-color:var(--accent);background:var(--accent-soft)}
+  table.stack td{display:flex;justify-content:space-between;align-items:center;gap:14px;white-space:normal;padding:7px 0;border-bottom:1px dashed var(--line);text-align:right}
+  table.stack td:last-child{border:0}
+  table.stack td::before{content:attr(data-label);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:left;flex:none}
+  table.stack td .bar{width:70px!important}
+
+  .ficha{display:none;position:fixed;inset:0;z-index:60;border-radius:0;overflow-y:auto;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border:0}
+  .ficha.open{display:block}
+  .fclose{display:inline-block;margin-bottom:12px}
+  .line{grid-template-columns:minmax(0,1fr) auto}
+  .line .a{text-align:left!important}
+  .tot .big{font-size:28px}.tot .bsbig{font-size:26px}
+  .rec{font-size:11px;overflow-x:auto;white-space:nowrap}
+  .toast{bottom:calc(86px + env(safe-area-inset-bottom,0px));max-width:92%;text-align:center}
+  .search{max-width:none}
+}
+@media (min-width:821px){.fclose{display:none!important}}
+
+/* ===== Tema clínico veterinario ===== */
+.app{gap:22px}
+aside{background:var(--side);border:0;border-radius:20px;box-shadow:0 12px 30px rgba(15,79,79,.2);padding:18px 12px}
+.brand b{color:#fff}.brand small{color:#9fd0cb}
+nav .grp{color:#7fb5b0}
+nav button{color:#cfe8e5;border-radius:10px}
+nav button:hover{background:rgba(255,255,255,.09);color:#fff}
+nav button.on{background:#fff;color:var(--side);font-weight:600}
+.me{border-top-color:rgba(255,255,255,.15);color:#fff}.me small{color:#9fd0cb}.me .av{background:#dff2ef;color:var(--side)}
+.card{border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.card h3{font-size:15px}
+.bar{height:8px;background:#e6eeed;border-color:transparent}
+.bar i{background:var(--chart1)}.bar.low i{background:#e9776a}.bar.mid i{background:#e8b04a}
+.btn{border-radius:10px;background:#fff;border-color:var(--line);color:var(--ink)}
+.btn:hover{background:var(--surface2)}
+.btn.p{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn.p:hover{filter:brightness(1.06);background:var(--coral)}
+.chip{background:#fff}
+.chip.on{background:var(--side);color:#fff;border-color:var(--side)}
+.pill{font-weight:600}
+.p-info{background:#dff1ef;color:var(--accent-ink)}
+.sw.on{background:var(--accent)}
+.rate{background:var(--bs-soft);border-color:#f2d6a8}
+.demo{background:transparent;border-style:dashed}
+tbody tr.sel{background:var(--accent-soft)}
+.id{background:#eef3f3;border-color:transparent;color:#4d6666}
+.bal{background:var(--surface2);border:1px solid var(--line);border-radius:12px}
+.toast{background:var(--side)}
+
+/* barra superior y títulos */
+.bar2{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.gsearch{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.gsearch:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.gsearch input{border:0;outline:0;background:none;font:inherit;color:var(--ink);padding:10px 0;width:100%}
+.gsearch svg{width:18px;height:18px;stroke:var(--mut);fill:none;stroke-width:2;flex:none}
+.ttl{margin-bottom:14px}.ttl h1{font-size:26px;letter-spacing:-.5px}.ttl p{margin:2px 0 0;color:var(--mut)}
+
+/* resumen */
+.statbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;margin-bottom:20px}
+.st{padding:16px 20px;display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line);min-width:0}
+.st:first-child{border:0}
+.st .k{color:var(--mut);font-size:12px;font-weight:500}
+.st b{font:800 26px var(--f-head);letter-spacing:-.5px}
+.st .bs{color:var(--bs);font-weight:600;font-size:13px}
+.st .d{font-size:12px;color:var(--mut);margin-top:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:4px 2px 10px;flex-wrap:wrap}
+.sec-h h2{font-size:18px}.sec-h span{color:var(--mut);font-size:13px}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start;margin-bottom:16px}
+.col2{background:#e7eeed;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col2 .ch{display:flex;justify-content:space-between;align-items:center;font:700 13px var(--f-head);padding:2px 4px 4px;color:var(--ink)}
+.col2 .ch i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--sc);margin-right:7px}
+.col2 .ch .n{background:#fff;border-radius:99px;padding:0 9px;font-size:12px;color:var(--mut)}
+.pc{background:#fff;border-radius:11px;padding:10px 11px;border:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+.pc .t{display:flex;gap:9px;align-items:center}
+.pc .t b{font-family:var(--f-head);line-height:1.1}.pc .t small{display:block;color:var(--mut);font-size:11px}
+.pc .why{font-size:13px}
+.pc .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mut)}
+.pc .price{font-size:13px}
+.pc .btn{padding:5px 12px;font-size:12px;align-self:flex-start}
+
+/* especies */
+.sp{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.spi{width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;display:inline-grid;place-items:center;flex:none}
+.spi svg{width:14px;height:14px;fill:currentColor}
+.spi.lg{width:76px;height:76px;border-radius:22px}.spi.lg svg{width:48px;height:48px}
+
+/* ficha del paciente */
+.split{grid-template-columns:minmax(0,1fr) minmax(360px,1.15fr)}
+.pheader{display:flex;gap:16px;align-items:center}
+.pheader h2{font-size:26px;letter-spacing:-.5px}
+.alerts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;min-height:4px}
+.al{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.al.bad{background:var(--bad-soft);color:var(--bad)}
+.ftabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:14px 0 12px;overflow-x:auto}
+.ftab{border:0;background:none;padding:9px 12px;font-weight:600;color:var(--mut);border-bottom:2px solid transparent;white-space:nowrap;margin-bottom:-1px}
+.ftab.on{color:var(--accent);border-color:var(--accent)}
+.soap{display:grid;gap:8px}
+.soap div{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:13px;align-items:start}
+.soap b{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font:800 12px var(--f-head)}
+.wt{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.tp{font-size:11px;font-weight:600;padding:1px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent-ink)}
+.tp.c{background:var(--coral-soft);color:var(--coral)}.tp.v{background:#e5e8fb;color:#4b50a8}
+
+/* agenda */
+.ev{border:1px solid #bfe3df;border-left:0;border-radius:10px;background:#e0f2f0;color:var(--ink)}
+.ev.st-Atendida{background:#eef2f2;border-color:#dde5e5;opacity:.8}
+.ev.st-Encurso{background:var(--coral-soft);border-color:#f7c3b8}
+.ev b{color:var(--ink)}.ev span{color:#4d6666}
+
+/* caja */
+.tot{background:linear-gradient(155deg,#0f4f4f,#16766f);color:#fff;border-radius:16px}
+.tot .r{color:#bfe3df;opacity:1}.tot hr{border-top-color:rgba(255,255,255,.22)}
+.tot .big{color:#fff}.tot .bsbig{color:#ffd79a}
+.m{border-radius:12px}.m.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.tabbar{background:#fff;border-top:1px solid var(--line)}
+.tabbar button.on{background:var(--accent-soft);color:var(--accent-ink)}
+.tile.on{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent)}
+
+@media (max-width:1000px){.split{grid-template-columns:1fr}.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){
+  body::before{background:var(--side)}
+  .appbar{background:var(--side);border-bottom:0;margin-inline:-16px;padding-inline:16px}
+  .abrand{color:#fff}.abt{color:#a9d6d1}
+  .ibtn{background:rgba(255,255,255,.12);border:0}.ibtn svg{stroke:#fff}
+  .bar2 .btn.p{display:none}
+  .ttl h1{font-size:22px}
+  .statbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .st{padding:12px 14px}.st b{font-size:21px}
+  .st:nth-child(3){border-left:0}.st:nth-child(n+3){border-top:1px solid var(--line)}
+  .board{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:84%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-inline:-2px}
+  .col2{scroll-snap-align:start}
+  table.stack tr{background:#fff}
+  .pheader h2{font-size:22px}.spi.lg{width:60px;height:60px;border-radius:18px}.spi.lg svg{width:38px;height:38px}
+}
+</style>
+
+<header class="appbar">
+  <button class="ibtn" id="ham" aria-label="Abrir menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <div class="abrand"><svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#bfeadf"/><g fill="var(--accent-ink)"><ellipse cx="11" cy="14" rx="2.6" ry="3.3"/><ellipse cx="17" cy="10.5" rx="2.6" ry="3.3"/><ellipse cx="23" cy="14" rx="2.6" ry="3.3"/><path d="M17 17c-4 0-7 3.4-7 6 0 2.2 2 3 4 2.6 1-.2 2-.5 3-.5s2 .3 3 .5c2 .4 4-.4 4-2.6 0-2.6-3-6-7-6z"/></g></svg>Huella Vet</div>
+  <span class="abt" id="abt"></span>
+</header>
+<div class="app">
+<aside>
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#bfeadf"/><g fill="var(--accent-ink)"><ellipse cx="11" cy="14" rx="2.6" ry="3.3"/><ellipse cx="17" cy="10.5" rx="2.6" ry="3.3"/><ellipse cx="23" cy="14" rx="2.6" ry="3.3"/><path d="M17 17c-4 0-7 3.4-7 6 0 2.2 2 3 4 2.6 1-.2 2-.5 3-.5s2 .3 3 .5c2 .4 4-.4 4-2.6 0-2.6-3-6-7-6z"/></g></svg>
+    <div><b>Huella Vet</b><small>Clínica veterinaria</small></div>
+  </div>
+  <nav id="nav"></nav>
+  <div class="me"><div class="av">LR</div><div><b>Dra. Laura Rojas</b><small>Administradora</small></div></div>
+</aside>
+
+<main>
+  <div class="bar2">
+    <label class="gsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" placeholder="Buscar paciente, dueño o ID (ej. FEL-0187)" aria-label="Buscar paciente"></label>
+    <div class="rate" title="Cambia la tasa para ver cómo se recalculan todos los montos en bolívares">
+      <div class="l">Tasa BCV<span id="rdate"></span></div>
+      <div class="v">Bs <input id="rate" type="text" inputmode="decimal" value="385,20" aria-label="Tasa BCV en bolívares por dólar"> /US$</div>
+    </div>
+    <button class="btn p">+ Nueva cita</button>
+  </div>
+  <div class="ttl"><h1 id="h1"></h1><p id="h1s"></p></div>
+  <div class="demo"><b>Maqueta de demostración.</b> Datos de ejemplo, sin conexión a una base de datos. Cambia la tasa BCV arriba y mira cómo se recalculan los bolívares en todas las pantallas.</div>
+
+  <!-- RESUMEN -->
+  <section class="view" id="v-resumen">
+    <div class="card statbar">
+      <div class="st"><span class="k">Ingresos de hoy</span><b class="num" data-usd="486"></b><span class="bs num" data-bs="486"></span><span class="d"><span class="up">▲ 12%</span> vs. martes pasado</span></div>
+      <div class="st"><span class="k">Ingresos del mes</span><b class="num" data-usd="9840"></b><span class="bs num" data-bs="9840"></span><span class="d"><span class="up">▲ 8%</span> vs. octubre</span></div>
+      <div class="st"><span class="k">Cuentas por cobrar</span><b class="num" data-usd="1215"></b><span class="bs num" data-bs="1215"></span><span class="d">14 mascotas con saldo</span></div>
+      <div class="st"><span class="k">Citas de hoy</span><b class="num">18</b><span class="bs" style="color:var(--mut)">11 atendidas · 7 pendientes</span><span class="d dn">2 canceladas</span></div>
+    </div>
+    <div class="sec-h"><h2>Flujo del día</h2><span>Del ingreso a la sala de espera hasta el cobro</span></div>
+    <div class="board" id="board"></div>
+    <div class="grid two" style="margin-bottom:14px">
+      <div class="card"><h3>Próximas citas de hoy <a href="#agenda">Ver agenda</a></h3><div class="wrap"><table><thead><tr><th>Hora</th><th>Paciente</th><th>Motivo</th><th>Veterinario</th><th>Estado</th></tr></thead><tbody id="today"></tbody></table></div></div>
+      <div class="card"><h3>Pacientes por especie</h3><div class="donut"><div class="dn-r" id="donut"><div><span id="dtot"></span><small>activos</small></div></div><div class="leg" id="leg"></div></div></div>
+    </div>
+    <div class="grid even">
+      <div class="card"><h3>Ingresos del mes por concepto</h3><div id="conc"></div></div>
+      <div class="card"><h3>Requiere atención</h3>
+        <div class="line" style="grid-template-columns:1fr auto"><div>Vacuna antirrábica vence esta semana<small>9 pacientes · enviar recordatorio por WhatsApp</small></div><span class="pill p-warn">9</span></div>
+        <div class="line" style="grid-template-columns:1fr auto"><div>Stock bajo en inventario<small>Amoxicilina 250 mg, Cuello isabelino M, Vitamina B12</small></div><span class="pill p-bad">3</span></div>
+        <div class="line" style="grid-template-columns:1fr auto"><div>Medicamentos por caducar en 30 días<small>Lote A-2291 Meloxicam</small></div><span class="pill p-warn">2</span></div>
+        <div class="line" style="grid-template-columns:1fr auto"><div>Pagos parciales pendientes<small>Cirugía de Rocky · saldo <span class="bsv num" data-bs="120"></span></small></div><span class="pill p-info">1</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section class="view" id="v-agenda">
+    <div class="card">
+      <h3>Jueves 12 de noviembre <span style="display:flex;gap:8px"><button class="btn">‹</button><button class="btn">Hoy</button><button class="btn">›</button><button class="btn p">+ Nueva cita</button></span></h3>
+      <div class="chips" id="agchips"></div>
+      <div class="wrap"><div class="ag" id="ag"></div></div>
+    </div>
+  </section>
+
+  <!-- MASCOTAS -->
+  <section class="view" id="v-mascotas">
+    <div class="split">
+      <div class="card"><div class="chips" id="chips"></div>
+        <div class="wrap"><table><thead><tr><th>ID</th><th>Paciente</th><th>Dueño</th><th>Última visita</th></tr></thead><tbody id="pets"></tbody></table></div></div>
+      <div class="card ficha" id="ficha"></div>
+    </div>
+  </section>
+
+  <!-- CAJA -->
+  <section class="view" id="v-caja">
+    <div class="pos">
+      <div class="card">
+        <h3>Cobro de <span id="cajaPet" style="display:inline-flex;align-items:center;gap:8px;font:700 15px var(--f-head);flex-wrap:wrap"></span></h3>
+        <div id="lines"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn">+ Servicio</button><button class="btn">+ Medicamento</button><button class="btn">+ Accesorio</button></div>
+        <div class="rec" id="rec"></div>
+      </div>
+      <div>
+        <div class="tot">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.85">Total en dólares</div>
+          <div class="big num" id="tUsd"></div>
+          <hr>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.85">Total en bolívares</div>
+          <div class="bsbig num" id="tBs"></div>
+          <div class="r"><span id="calc"></span></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Forma de pago</h3>
+          <div class="methods" id="methods"></div>
+          <div id="payinfo" style="font-size:13px;color:var(--mut)"></div>
+          <button class="btn p" style="width:100%;margin-top:12px;padding:11px" id="pay">Registrar pago</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGOS -->
+  <section class="view" id="v-pagos">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="k">Cobrado en dólares</div><div class="usd num" data-usd="6120"></div><div class="d">Efectivo y Zelle</div></div>
+      <div class="card kpi"><div class="k">Cobrado en bolívares</div><div class="usd num" style="color:var(--bs)" id="bsCob"></div><div class="d">Pago móvil, punto y transferencia · al cambio de cada día</div></div>
+      <div class="card kpi"><div class="k">Pendiente</div><div class="usd num" data-usd="1215"></div><div class="bs num" data-bs="1215"></div></div>
+    </div>
+    <div class="card"><h3>Ingresos recientes <span class="pill p-info">Cada pago guarda la tasa BCV de su fecha</span></h3>
+      <div class="wrap"><table><thead><tr><th>Fecha</th><th>Paciente</th><th>Concepto</th><th>Método</th><th class="r">Monto US$</th><th class="r">Tasa BCV</th><th class="r">Monto Bs</th><th>Estado</th></tr></thead><tbody id="pagos"></tbody></table></div></div>
+  </section>
+
+  <!-- INVENTARIO -->
+  <section class="view" id="v-inventario">
+    <div class="card"><h3>Medicamentos y accesorios <span style="display:flex;gap:8px"><button class="btn">Importar</button><button class="btn p">+ Producto</button></span></h3>
+      <div class="wrap"><table><thead><tr><th>Producto</th><th>Tipo</th><th>Lote / vence</th><th>Existencia</th><th class="r">Precio US$</th><th class="r">Precio Bs</th><th>Estado</th></tr></thead><tbody id="inv"></tbody></table></div></div>
+  </section>
+
+  <!-- GASTOS -->
+  <section class="view" id="v-gastos">
+    <div class="grid two">
+      <div class="card"><h3>Gastos recientes <button class="btn p">+ Registrar gasto</button></h3>
+        <div class="wrap"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th class="r">US$</th><th class="r">Bs</th></tr></thead><tbody id="gas"></tbody></table></div></div>
+      <div class="card"><h3>Gasto del mes por categoría</h3><div id="gcat"></div>
+        <div class="bal"><span>Total del mes</span><b class="num" id="gTot"></b></div></div>
+    </div>
+  </section>
+
+  <!-- REPORTES -->
+  <section class="view" id="v-reportes">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="k">Ingresos (noviembre)</div><div class="usd num" data-usd="9840"></div></div>
+      <div class="card kpi"><div class="k">Gastos (noviembre)</div><div class="usd num" data-usd="4360"></div></div>
+      <div class="card kpi"><div class="k">Utilidad</div><div class="usd num up" data-usd="5480"></div><div class="bs num" data-bs="5480"></div><div class="d">Margen 55,7%</div></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><h3>Ingresos vs. gastos, últimos 6 meses (US$)</h3><div style="display:flex;gap:16px;font-size:12.5px;color:var(--mut);margin:-4px 0 8px"><span class="sp"><i style="--c:var(--chart1)"></i>Ingresos</span><span class="sp"><i style="--c:var(--chart2)"></i>Gastos</span></div><svg id="chart" viewBox="0 0 560 250" width="100%" role="img" aria-label="Barras de ingresos y gastos por mes"></svg></div>
+      <div class="card"><h3>Servicios más vendidos</h3><div id="top"></div></div>
+    </div>
+  </section>
+
+  <!-- DUEÑOS -->
+  <section class="view" id="v-duenos">
+    <div class="card"><h3>Dueños registrados <button class="btn p">+ Nuevo dueño</button></h3>
+      <input class="search" id="qd" type="search" placeholder="Buscar por nombre, teléfono o mascota" aria-label="Buscar dueño">
+      <div class="wrap"><table><thead><tr><th>Dueño</th><th>Teléfono</th><th>Mascotas</th><th>Última visita</th><th class="r">Saldo US$</th><th class="r">Saldo Bs</th></tr></thead><tbody id="duenos"></tbody></table></div></div>
+  </section>
+
+  <!-- HOSPITALIZACIÓN -->
+  <section class="view" id="v-hosp">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="k">Pacientes internados</div><div class="usd num">3</div><div class="d">1 box disponible</div></div>
+      <div class="card kpi"><div class="k">Costo acumulado</div><div class="usd num" data-usd="359"></div><div class="bs num" data-bs="359"></div></div>
+    </div>
+    <div class="grid even" id="hosp"></div>
+  </section>
+
+  <!-- VACUNAS -->
+  <section class="view" id="v-vacunas">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="k">Vencen esta semana</div><div class="usd num">9</div><div class="d">Enviar recordatorio</div></div>
+      <div class="card kpi"><div class="k">Vencidas</div><div class="usd num dn">14</div><div class="d">Mascotas sin refuerzo</div></div>
+      <div class="card kpi"><div class="k">Programadas</div><div class="usd num">22</div><div class="d">Próximos 30 días</div></div>
+    </div>
+    <div class="card"><h3>Recordatorios de vacunación y desparasitación <button class="btn p" data-toast="Recordatorios enviados por WhatsApp (demo)">Enviar todos por WhatsApp</button></h3>
+      <div class="wrap"><table><thead><tr><th>Paciente</th><th>Dueño</th><th>Vacuna</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody id="vacs"></tbody></table></div></div>
+  </section>
+
+  <!-- CUENTAS POR COBRAR -->
+  <section class="view" id="v-cxc">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="k">Total por cobrar</div><div class="usd num" data-usd="1215"></div><div class="bs num" data-bs="1215"></div><div class="d">14 mascotas con saldo</div></div>
+      <div class="card kpi"><div class="k">Con más de 15 días</div><div class="usd num dn" data-usd="310"></div><div class="bs num" data-bs="310"></div></div>
+    </div>
+    <div class="card"><h3>Saldos pendientes <span class="pill p-info">Mostrando 5 de 14</span></h3>
+      <div class="wrap"><table><thead><tr><th>Dueño</th><th>Paciente</th><th>Concepto</th><th>Fecha</th><th class="r">Total US$</th><th class="r">Abonado</th><th class="r">Saldo US$</th><th class="r">Saldo Bs</th><th></th></tr></thead><tbody id="cxc"></tbody></table></div></div>
+  </section>
+
+  <!-- PROVEEDORES -->
+  <section class="view" id="v-prov">
+    <div class="card"><h3>Proveedores <button class="btn p">+ Proveedor</button></h3>
+      <div class="wrap"><table><thead><tr><th>Proveedor</th><th>Rubro</th><th>Contacto</th><th>Última compra</th><th class="r">Por pagar US$</th><th class="r">Por pagar Bs</th></tr></thead><tbody id="prov"></tbody></table></div></div>
+  </section>
+
+  <!-- USUARIOS -->
+  <section class="view" id="v-usuarios">
+    <div class="card"><h3>Usuarios y roles <button class="btn p">+ Invitar usuario</button></h3>
+      <div class="wrap"><table><thead><tr><th>Usuario</th><th>Rol</th><th>Puede ver y hacer</th><th>Último acceso</th><th>Estado</th></tr></thead><tbody id="users"></tbody></table></div></div>
+  </section>
+
+  <!-- CONFIGURACIÓN -->
+  <section class="view" id="v-config">
+    <div class="grid even">
+      <div class="card"><h3>Tasa BCV</h3>
+        <div class="num" style="font:800 34px var(--f-head);color:var(--bs);letter-spacing:-.8px" id="cfgRate"></div>
+        <p style="color:var(--mut);margin:4px 0 12px">Fuente: Banco Central de Venezuela. Se actualiza cada día hábil a las 08:00 y cada cobro guarda la tasa vigente.</p>
+        <div class="row2"><div>Permitir ajuste manual de la tasa<small>Solo para el administrador</small></div><span class="sw"></span></div>
+        <div class="wrap" style="margin-top:8px"><table><thead><tr><th>Fecha</th><th class="r">Bs por US$</th><th class="r">Variación</th></tr></thead><tbody id="tasas"></tbody></table></div></div>
+      <div class="card"><h3>Métodos de pago</h3>
+        <div class="row2"><div>Efectivo US$<small>Sin conversión</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Zelle<small>Sin conversión</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Pago móvil<small>Bolívares a tasa BCV del día</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Punto de venta<small>Bolívares a tasa BCV del día</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Transferencia Bs<small>Bolívares a tasa BCV del día</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Efectivo Bs<small>Bolívares a tasa BCV del día</small></div><span class="sw"></span></div></div>
+      <div class="card"><h3>Datos de la clínica</h3>
+        <div class="facts"><div><span>Nombre</span>Huella Vet</div><div><span>RIF</span>J-00000000-0</div><div><span>Teléfono</span>0212-555 0100</div><div><span>Horario</span>Lun a sáb · 8:00 a 17:00</div></div>
+        <div class="row2"><div>Recordatorios por WhatsApp<small>24 horas antes de cada cita</small></div><span class="sw on"></span></div>
+        <div class="row2"><div>Mostrar precios en dólares y bolívares<small>En recibos y presupuestos</small></div><span class="sw on"></span></div></div>
+    </div>
+  </section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<div class="scrim" id="scrim"></div>
+<nav class="tabbar" id="tabbar" aria-label="Navegación principal"></nav>
+<div class="drawer" id="drawer" role="dialog" aria-label="Menú">
+  <div class="grab"></div>
+  <div class="dh"><b>Menú</b><button class="btn dclose">Cerrar</button></div>
+  <div id="dtiles"></div>
+  <div class="dme"><div class="av">LR</div><div><b>Dra. Laura Rojas</b><small>Administradora</small></div></div>
+</div>
+
+<script>
+/* ---------- Datos de ejemplo ---------- */
+var SP={perro:'Perro',gato:'Gato',ave:'Ave',roedor:'Roedor',reptil:'Reptil',exotico:'Exótico'};
+var COL=function(s){return 'var(--sp-'+s+')'};
+var PETS=[
+ {id:'CAN-0241',n:'Rocky',s:'perro',r:'Labrador',sx:'Macho',e:'4 años',w:'31,2 kg',chip:'985 112 004 551 220',o:'Carlos Medina',t:'0414-555 0192',u:'Hoy',bal:120,vac:'Antirrábica · vence 20 nov',h:[['10 nov','Cirugía: extirpación de lipoma',260],['02 oct','Control postoperatorio',20],['15 ago','Vacuna séxtuple',22]]},
+ {id:'FEL-0187',n:'Luna',s:'gato',r:'Siamés',sx:'Hembra',e:'2 años',w:'3,8 kg',chip:'985 112 004 778 101',o:'María Fernández',t:'0424-555 0134',u:'Hoy',bal:0,vac:'Triple felina · vence 02 feb',h:[['12 nov','Consulta general',25],['12 nov','Triple felina + desparasitante',30],['21 jul','Esterilización',90]]},
+ {id:'CAN-0239',n:'Max',s:'perro',r:'Pastor alemán',sx:'Macho',e:'7 años',w:'36,0 kg',chip:'985 112 003 410 882',o:'José Ramírez',t:'0412-555 0176',u:'Hoy',bal:0,vac:'Antirrábica · al día',h:[['12 nov','Control de displasia + radiografía',55],['30 sep','Ecografía abdominal',45]]},
+ {id:'FEL-0185',n:'Michi',s:'gato',r:'Mestizo',sx:'Macho',e:'9 años',w:'4,6 kg',chip:'—',o:'Ana Torres',t:'0416-555 0108',u:'10 nov',bal:35,vac:'Triple felina · vencida',h:[['10 nov','Hospitalización 1 día + suero',70],['08 nov','Análisis de sangre',32]]},
+ {id:'CAN-0233',n:'Kira',s:'perro',r:'Golden retriever',sx:'Hembra',e:'1 año',w:'24,5 kg',chip:'985 112 005 220 931',o:'Luis Salazar',t:'0414-555 0155',u:'09 nov',bal:0,vac:'Séxtuple · refuerzo 28 nov',h:[['09 nov','Vacuna séxtuple (2.ª dosis)',22],['19 oct','Primera consulta y 1.ª dosis',45]]},
+ {id:'AVE-0042',n:'Kiwi',s:'ave',r:'Periquito australiano',sx:'Macho',e:'3 años',w:'0,04 kg',chip:'—',o:'Elena Rivas',t:'0426-555 0121',u:'05 nov',bal:0,vac:'—',h:[['05 nov','Corte de uñas y revisión',12]]},
+ {id:'ROE-0031',n:'Canela',s:'roedor',r:'Hámster sirio',sx:'Hembra',e:'1 año',w:'0,12 kg',chip:'—',o:'Pedro Gómez',t:'0412-555 0147',u:'01 nov',bal:0,vac:'—',h:[['01 nov','Consulta por dermatitis',20]]},
+ {id:'REP-0012',n:'Zeus',s:'reptil',r:'Iguana verde',sx:'Macho',e:'5 años',w:'4,1 kg',chip:'985 112 006 001 442',o:'Andrea Silva',t:'0424-555 0188',u:'27 oct',bal:0,vac:'—',h:[['27 oct','Revisión metabólica ósea',40]]},
+ {id:'CAN-0228',n:'Bella',s:'perro',r:'Chihuahua',sx:'Hembra',e:'11 años',w:'2,9 kg',chip:'985 112 002 887 340',o:'Rosa Pérez',t:'0414-555 0163',u:'23 oct',bal:60,vac:'Antirrábica · vence 20 nov',h:[['23 oct','Limpieza dental bajo anestesia',120],['23 oct','Pre-quirúrgico',35]]},
+ {id:'EXO-0009',n:'Nube',s:'exotico',r:'Conejo cabeza de león',sx:'Hembra',e:'2 años',w:'1,6 kg',chip:'—',o:'Daniela Cruz',t:'0416-555 0142',u:'18 oct',bal:0,vac:'—',h:[['18 oct','Consulta por problemas digestivos',28]]},
+ {id:'FEL-0179',n:'Simba',s:'gato',r:'Persa',sx:'Macho',e:'5 años',w:'5,2 kg',chip:'985 112 004 119 760',o:'Gabriel León',t:'0412-555 0170',u:'15 oct',bal:0,vac:'Triple felina · vence 15 mar',h:[['15 oct','Baño medicado',25]]},
+ {id:'CAN-0221',n:'Toby',s:'perro',r:'Beagle',sx:'Macho',e:'6 años',w:'13,4 kg',chip:'985 112 003 662 019',o:'Marta Díaz',t:'0424-555 0119',u:'12 oct',bal:0,vac:'Antirrábica · vence 03 dic',h:[['12 oct','Desparasitación y control de peso',24]]}
+];
+var CITAS=[
+ {v:0,h:8,d:.5,n:'Max',t:'Control displasia',s:'perro',st:'Atendida'},
+ {v:0,h:9,d:1,n:'Kira',t:'Vacuna séxtuple',s:'perro',st:'Atendida'},
+ {v:0,h:11,d:1,n:'Rocky',t:'Revisión postoperatoria',s:'perro',st:'Pendiente'},
+ {v:0,h:14,d:1.5,n:'Bella',t:'Control geriátrico',s:'perro',st:'Pendiente'},
+ {v:1,h:8.5,d:.5,n:'Luna',t:'Consulta general',s:'gato',st:'Atendida'},
+ {v:1,h:10,d:1,n:'Michi',t:'Seguimiento hospital.',s:'gato',st:'Pendiente'},
+ {v:1,h:13,d:.5,n:'Simba',t:'Vacuna triple',s:'gato',st:'Pendiente'},
+ {v:1,h:15,d:1,n:'Kiwi',t:'Revisión de plumaje',s:'ave',st:'Pendiente'},
+ {v:2,h:8,d:2,n:'Zeus',t:'Cirugía menor',s:'reptil',st:'En curso'},
+ {v:2,h:11,d:.5,n:'Canela',t:'Control dermatitis',s:'roedor',st:'Pendiente'},
+ {v:2,h:13.5,d:1,n:'Nube',t:'Consulta exóticos',s:'exotico',st:'Pendiente'}
+];
+var VETS=[['Dra. Rojas','Medicina general'],['Dr. Pérez','Cirugía'],['Dra. Mendoza','Exóticos y aves']];
+var CATALOGO=[
+ {n:'Consulta general',k:'Servicio',u:25,q:1},
+ {n:'Vacuna triple felina',k:'Servicio',u:18,q:1},
+ {n:'Desparasitante Drontal Cat',k:'Medicamento',u:12,q:1},
+ {n:'Collar antipulgas Seresto',k:'Accesorio',u:15,q:1}
+];
+var METODOS=[['Efectivo US$','usd','Sin conversión'],['Zelle','usd','Sin conversión'],['Pago móvil','bs','A tasa BCV del día'],['Punto de venta','bs','A tasa BCV del día'],['Transferencia Bs','bs','A tasa BCV del día']];
+var PAGOS=[
+ ['12 nov','Luna','Consulta + vacuna','Pago móvil',55,385.20,'ok'],
+ ['12 nov','Max','Radiografía','Zelle',55,385.20,'ok'],
+ ['11 nov','Kira','Vacuna séxtuple','Efectivo US$',22,380.75,'ok'],
+ ['10 nov','Rocky','Cirugía de lipoma (anticipo)','Transferencia Bs',140,379.40,'part'],
+ ['10 nov','Michi','Hospitalización','Punto de venta',35,379.40,'part'],
+ ['09 nov','Toby','Desparasitación','Efectivo US$',24,379.40,'ok'],
+ ['07 nov','Bella','Limpieza dental','Pago móvil',60,377.85,'part'],
+ ['06 nov','Simba','Baño medicado','Pago móvil',25,376.20,'ok']
+];
+var INV=[
+ ['Amoxicilina 250 mg','Medicamento','A-2310 · 04/2027',4,20,8.5],
+ ['Meloxicam 1,5 mg/ml','Medicamento','A-2291 · 12/2026',11,25,14],
+ ['Drontal Cat','Medicamento','D-1190 · 09/2027',36,30,12],
+ ['Vitamina B12 inyectable','Medicamento','B-0734 · 03/2027',3,15,6],
+ ['Vacuna séxtuple canina','Vacuna','V-5521 · 02/2027',22,30,22],
+ ['Vacuna triple felina','Vacuna','V-5530 · 01/2027',18,20,18],
+ ['Collar antipulgas Seresto','Accesorio','—',17,15,15],
+ ['Cuello isabelino M','Accesorio','—',2,10,9],
+ ['Arnés talla L','Accesorio','—',9,8,16],
+ ['Alimento Hill\'s Metabolic 2 kg','Alimento','H-8841 · 08/2027',14,12,38]
+];
+var GAS=[
+ ['11 nov','Compra de vacunas y medicamentos (proveedor Vetfarma)','Insumos',1240],
+ ['10 nov','Nómina quincenal (3 veterinarios, 2 recepción)','Nómina',1450],
+ ['08 nov','Alquiler del local','Alquiler',650],
+ ['06 nov','Mantenimiento de equipo de rayos X','Equipos',280],
+ ['05 nov','Electricidad, agua e internet','Servicios',210],
+ ['02 nov','Publicidad en Instagram','Marketing',95]
+];
+var GCAT=[['Insumos y medicamentos',1840],['Nómina',1450],['Alquiler',650],['Equipos',280],['Servicios',210],['Marketing',95]];
+var CONC=[['Consultas',3120],['Cirugías y operaciones',2480],['Tratamientos',1610],['Medicamentos',1220],['Accesorios y alimento',840],['Vacunas',570]];
+var MESES=[['Jun',6200,3900],['Jul',7100,4100],['Ago',7650,4200],['Sep',8400,4250],['Oct',9100,4320],['Nov',9840,4360]];
+var TOP=[['Consulta general',142],['Vacuna antirrábica',96],['Desparasitación',88],['Baño medicado',51],['Esterilización',34]];
+
+/* ---------- Datos de las secciones nuevas ---------- */
+var DUENOS=[['Carlos Medina','0414-555 0192','Rocky (Perro)','Hoy',120],['María Fernández','0424-555 0134','Luna (Gato)','Hoy',0],['José Ramírez','0412-555 0176','Max (Perro)','Hoy',0],['Ana Torres','0416-555 0108','Michi (Gato)','10 nov',35],['Luis Salazar','0414-555 0155','Kira (Perro)','09 nov',0],['Elena Rivas','0426-555 0121','Kiwi (Ave)','05 nov',0],['Pedro Gómez','0412-555 0147','Canela (Roedor)','01 nov',0],['Andrea Silva','0424-555 0188','Zeus (Reptil)','27 oct',0],['Rosa Pérez','0414-555 0163','Bella (Perro)','23 oct',60],['Daniela Cruz','0416-555 0142','Nube (Conejo)','18 oct',0]];
+var HOSP=[['Box 1','Michi','gato','Insuficiencia renal · suero intravenoso','Día 3','Dra. Rojas','Estable','p-ok','Suero a las 14:00',210],['Box 2','Zeus','reptil','Postoperatorio de cirugía menor','Día 1','Dr. Pérez','En observación','p-warn','Antibiótico a las 16:30',85],['Jaula 4','Nube','exotico','Estasis gastrointestinal','Día 2','Dra. Mendoza','Mejorando','p-info','Alimentación a las 13:30',64]];
+var VACREC=[['Rocky','perro','Carlos Medina','Antirrábica','20 nov','p-warn','Vence en 8 días'],['Bella','perro','Rosa Pérez','Antirrábica','20 nov','p-warn','Vence en 8 días'],['Michi','gato','Ana Torres','Triple felina','18 oct','p-bad','Vencida'],['Kira','perro','Luis Salazar','Séxtuple (refuerzo)','28 nov','p-info','Programada'],['Toby','perro','Marta Díaz','Antirrábica','03 dic','p-info','Programada'],['Luna','gato','María Fernández','Triple felina','02 feb','p-ok','Al día']];
+var CXC=[['Carlos Medina','Rocky','Cirugía de lipoma','10 nov',260,140],['Rosa Pérez','Bella','Limpieza dental','23 oct',155,95],['Ana Torres','Michi','Hospitalización y análisis','10 nov',102,67],['Gabriel León','Simba','Baño y corte','02 nov',45,25],['Marta Díaz','Toby','Consulta y desparasitación','28 oct',80,60]];
+var PROV=[['Vetfarma','Medicamentos y vacunas','Luis Brito · 0212-555 0101','11 nov',620],['Mascota Feliz C.A.','Alimento y accesorios','Carla Núñez · 0414-555 0144','03 nov',310],['LabVet Diagnóstico','Laboratorio externo','Dr. Soto · 0424-555 0166','29 oct',0],['Rayos Médicos C.A.','Mantenimiento de equipos','Ing. Paredes · 0416-555 0119','06 nov',140]];
+var USERS=[['Laura Rojas','Administradora','Acceso total','Hoy 08:02','p-ok','Activo'],['Andrés Pérez','Veterinario','Fichas, agenda, hospitalización','Hoy 07:55','p-ok','Activo'],['Valeria Mendoza','Veterinario','Fichas, agenda, hospitalización','Ayer 17:40','p-ok','Activo'],['Sofía Marín','Recepción','Agenda, dueños, cobros','Hoy 07:48','p-ok','Activo'],['Daniel Ortiz','Caja','Cobros e ingresos','Hoy 08:10','p-ok','Activo'],['Pasante','Solo lectura','Consulta de fichas','Hace 12 días','p-warn','Inactivo']];
+var TASAS=[['12 nov (hoy)',385.20],['11 nov',380.75],['10 nov',379.40],['07 nov',377.85],['06 nov',376.20],['05 nov',375.10],['04 nov',373.90]];
+
+/* ---------- Utilidades ---------- */
+var rate=385.20;
+var fUsd=function(n){return '$'+n.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2})};
+var fBs=function(n){return 'Bs '+n.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2})};
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var SPICO={
+ perro:'<path d="M4.5 6.5C3 8 2.7 12 4 14.5c.7 1.3 2.3.9 2.6-.5l.4-5zM19.5 6.5c1.5 1.5 1.8 5.5.5 8-.7 1.3-2.3.9-2.6-.5l-.4-5z"/><ellipse cx="12" cy="12.5" rx="5.5" ry="6"/><circle cx="9.8" cy="11.3" r=".9" fill="var(--c)"/><circle cx="14.2" cy="11.3" r=".9" fill="var(--c)"/><ellipse cx="12" cy="15" rx="1.6" ry="1.1" fill="var(--c)"/>',
+ gato:'<path d="M6 10.5L5.5 3.5 10.5 7zM18 10.5l.5-7L13.5 7z"/><circle cx="12" cy="13" r="6.5"/><circle cx="9.7" cy="12" r=".9" fill="var(--c)"/><circle cx="14.3" cy="12" r=".9" fill="var(--c)"/><path d="M11 15h2l-1 1.2z" fill="var(--c)"/>',
+ ave:'<path d="M4 14c0-4 3-7 7-7 2 0 3.5.8 4.5 2L21 10.5l-3.5 1.5c-.3 3.500-3 6-6.500 6-3.500 0-7-1.800-7-4z"/><circle cx="13" cy="10.500" r=".9" fill="var(--c)"/>',
+ roedor:'<circle cx="6.5" cy="7" r="3"/><circle cx="17.5" cy="7" r="3"/><ellipse cx="12" cy="13.5" rx="6.5" ry="6"/><circle cx="9.7" cy="12.500" r=".9" fill="var(--c)"/><circle cx="14.3" cy="12.500" r=".9" fill="var(--c)"/><ellipse cx="12" cy="15.200" rx="1.200" ry=".8" fill="var(--c)"/>',
+ reptil:'<path d="M3.500 15c0-4.500 3.800-8 8.500-8s8.500 3.500 8.500 8z"/><circle cx="21" cy="13" r="1.800"/><rect x="6" y="15.500" width="3" height="3" rx="1"/><rect x="15" y="15.500" width="3" height="3" rx="1"/><path d="M12 7v8M7.500 11h9" stroke="var(--c)" stroke-width="1" fill="none"/>',
+ exotico:'<ellipse cx="9" cy="6" rx="2" ry="5"/><ellipse cx="15" cy="6" rx="2" ry="5"/><ellipse cx="12" cy="14" rx="5.500" ry="5.500"/><circle cx="9.800" cy="13" r=".9" fill="var(--c)"/><circle cx="14.200" cy="13" r=".9" fill="var(--c)"/>'
+};
+var spIcon=function(k){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+SPICO[k]+'</svg>'};
+var spTag=function(s){return '<span class="sp" style="--c:'+COL(s)+'"><span class="spi">'+spIcon(s)+'</span>'+SP[s]+'</span>'};
+var toast=function(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},2400)};
+
+/* ---------- Navegación ---------- */
+var ICON={
+ resumen:'<path d="M3 12l9-8 9 8M5 10v10h14V10"/>',
+ agenda:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ mascotas:'<circle cx="7" cy="9" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 12c-3 0-5.5 2.6-5.5 4.6 0 1.6 1.5 2.2 3 1.9.8-.2 1.6-.4 2.5-.4s1.7.2 2.5.4c1.5.3 3-.3 3-1.9 0-2-2.5-4.6-5.5-4.6z"/>',
+ duenos:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 010 7M18 14c2.2.6 3.5 2.6 3.5 6"/>',
+ hosp:'<path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5"/><circle cx="7" cy="11" r="1.5"/>',
+ vacunas:'<path d="M18 2l4 4M17 7l3-3M3 21l5-5M14 6l4 4-8 8-4-4zM11 9l2 2"/>',
+ caja:'<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/>',
+ pagos:'<path d="M12 3v18M16 7.5c0-1.7-1.8-2.5-4-2.5s-4 .8-4 2.5 1.8 2.2 4 2.7 4 1 4 2.8-1.8 2.5-4 2.5-4-.8-4-2.5"/>',
+ cxc:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ gastos:'<path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/>',
+ inventario:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',
+ prov:'<path d="M2 6h12v10H2zM14 10h4l4 3v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',
+ reportes:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ usuarios:'<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+ config:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+ mas:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'
+};
+var VIEWS=[
+ ['resumen','Resumen','Resumen de la clínica','Jueves 12 de noviembre de 2026','Atención'],
+ ['agenda','Agenda','Agenda de citas','Disponibilidad por veterinario','Atención'],
+ ['mascotas','Mascotas','Mascotas','Fichas clínicas, identificador único y especie','Atención'],
+ ['duenos','Dueños','Dueños','Propietarios, contactos y saldos','Atención'],
+ ['hosp','Hospital','Hospitalización','Pacientes internados y su medicación','Atención'],
+ ['vacunas','Vacunas','Vacunas y recordatorios','Refuerzos próximos y vencidos','Atención'],
+ ['caja','Caja','Caja y cobros','Cada precio en dólares, convertido a bolívares con la tasa BCV','Finanzas'],
+ ['pagos','Ingresos','Ingresos y pagos','Historial de cobros con la tasa de cada día','Finanzas'],
+ ['cxc','Por cobrar','Cuentas por cobrar','Saldos pendientes en dólares y bolívares','Finanzas'],
+ ['gastos','Gastos','Control de gastos','Compras, nómina y gastos fijos','Finanzas'],
+ ['inventario','Inventario','Inventario','Medicamentos, vacunas, accesorios y alimento','Inventario'],
+ ['prov','Proveedores','Proveedores','Compras y cuentas por pagar','Inventario'],
+ ['reportes','Reportes','Reportes','Ingresos, gastos y utilidad','Administración'],
+ ['usuarios','Usuarios','Usuarios y roles','Quién puede ver y hacer qué','Administración'],
+ ['config','Ajustes','Configuración','Tasa BCV, métodos de pago y datos de la clínica','Administración']
+];
+var TABS=['resumen','agenda','mascotas','caja'];
+var cur='resumen';
+function icon(id){return '<svg viewBox="0 0 24 24">'+ICON[id]+'</svg>'}
+function buildNav(){
+  var h='',d='',g='',open=false;
+  VIEWS.forEach(function(v){
+    if(v[4]!==g){
+      if(open)d+='</div>';
+      g=v[4];h+='<div class="grp">'+g+'</div>';d+='<div class="dg">'+g+'</div><div class="tiles">';open=true;
+    }
+    h+='<button data-v="'+v[0]+'" class="'+(v[0]===cur?'on':'')+'">'+icon(v[0])+v[1]+'</button>';
+    d+='<button class="tile '+(v[0]===cur?'on':'')+'" data-v="'+v[0]+'">'+icon(v[0])+v[1]+'</button>';
+  });
+  $('nav').innerHTML=h;$('dtiles').innerHTML=d+'</div>';
+  $('tabbar').innerHTML=TABS.map(function(t){
+    var v=VIEWS.filter(function(x){return x[0]===t})[0];
+    return '<button data-v="'+t+'" class="'+(t===cur?'on':'')+'">'+icon(t)+v[1]+'</button>';
+  }).join('')+'<button data-more="1" class="'+(TABS.indexOf(cur)<0?'on':'')+'">'+icon('mas')+'Más</button>';
+}
+function go(v){
+  if(!VIEWS.some(function(x){return x[0]===v}))v='resumen';
+  cur=v;
+  var d=VIEWS.filter(function(x){return x[0]===v})[0];
+  $('h1').textContent=d[2];$('h1s').textContent=d[3];$('abt').textContent=d[1];closeDrawer();window.scrollTo(0,0);
+  document.querySelectorAll('.view').forEach(function(e){e.classList.toggle('on',e.id==='v-'+v)});
+  buildNav();
+}
+$('nav').addEventListener('click',function(e){var b=e.target.closest('button');if(b)location.hash=b.dataset.v});
+window.addEventListener('hashchange',function(){go(location.hash.slice(1))});
+
+/* ---------- Renderizado ---------- */
+var petFilter='todos',petSel=PETS[1],metodo=2,petQ='';
+function renderMoney(){
+  document.querySelectorAll('[data-usd]').forEach(function(e){e.textContent=fUsd(+e.dataset.usd)});
+  document.querySelectorAll('[data-bs]').forEach(function(e){e.textContent=fBs(+e.dataset.bs*rate)});
+}
+function renderResumen(){
+  $('today').innerHTML=CITAS.filter(function(c){return c.st!=='Atendida'}).sort(function(a,b){return a.h-b.h}).slice(0,5).map(function(c){
+    var hh=Math.floor(c.h),mm=c.h%1?'30':'00';
+    var cls=c.st==='En curso'?'p-info':'p-warn';
+    return '<tr><td class="num">'+hh+':'+mm+'</td><td><b>'+c.n+'</b> '+spTag(c.s)+'</td><td>'+c.t+'</td><td>'+VETS[c.v][0]+'</td><td><span class="pill '+cls+'">'+c.st+'</span></td></tr>';
+  }).join('');
+  var cnt={};PETS.forEach(function(p){cnt[p.s]=0});
+  var real={perro:412,gato:268,ave:41,roedor:36,reptil:19,exotico:22},tot=0,acc=0,stops=[],leg='';
+  Object.keys(real).forEach(function(k){tot+=real[k]});
+  Object.keys(real).forEach(function(k){var a=acc/tot*100;acc+=real[k];stops.push(COL(k)+' '+a+'% '+acc/tot*100+'%');leg+='<div>'+spTag(k)+'<b class="num">'+real[k]+'</b></div>'});
+  $('donut').style.background='conic-gradient('+stops.join(',')+')';
+  $('dtot').textContent=tot;$('leg').innerHTML=leg;
+  var mx=CONC[0][1];
+  $('conc').innerHTML=CONC.map(function(c){return '<div class="hbar"><span>'+c[0]+'</span><div class="bar"><i style="width:'+c[1]/mx*100+'%"></i></div><b class="num">'+fUsd(c[1])+'</b></div>'}).join('');
+}
+var agVet='all',lastMob=null;
+function isMobile(){return window.matchMedia('(max-width:820px)').matches}
+function renderAgenda(){
+  var mob=isMobile();lastMob=mob;
+  if(mob&&agVet==='all')agVet=0;
+  var opts=(mob?[]:[['all','Todos']]).concat(VETS.map(function(v,i){return [i,v[0]]}));
+  $('agchips').innerHTML=opts.map(function(c){return '<button class="chip '+(String(c[0])===String(agVet)?'on':'')+'" data-a="'+c[0]+'">'+c[1]+'</button>'}).join('');
+  var vs=agVet==='all'?[0,1,2]:[+agVet];
+  $('ag').style.gridTemplateColumns='44px repeat('+vs.length+','+(mob?'minmax(0,1fr)':'minmax(150px,1fr)')+')';
+  var h='<div></div>'+vs.map(function(i){return '<div class="hd">'+VETS[i][0]+'<small>'+VETS[i][1]+'</small></div>'}).join('');
+  h+='<div class="hrs">';for(var k=8;k<17;k++)h+='<div>'+k+':00</div>';h+='</div>';
+  vs.forEach(function(vi){
+    h+='<div class="col">'+CITAS.filter(function(c){return c.v===vi}).map(function(c){
+      return '<div class="ev st-'+c.st.replace(' ','')+'" style="--c:'+COL(c.s)+';top:'+(c.h-8)*64+'px;height:'+(c.d*64-4)+'px"><b>'+c.n+'</b><span>'+c.t+' · '+c.st+'</span></div>';
+    }).join('')+'</div>';
+  });
+  $('ag').innerHTML=h;
+}
+function renderPets(){
+  var ks=['todos'].concat(Object.keys(SP));
+  $('chips').innerHTML=ks.map(function(k){return '<button class="chip '+(k===petFilter?'on':'')+'" data-k="'+k+'">'+(k==='todos'?'Todos':SP[k]+'s')+'</button>'}).join('');
+  var list=PETS.filter(function(p){return (petFilter==='todos'||p.s===petFilter)&&(!petQ||(p.n+p.id+p.o+p.r).toLowerCase().indexOf(petQ)>-1)});
+  if(list.length&&list.indexOf(petSel)<0)petSel=list[0];
+  $('pets').innerHTML=list.map(function(p){
+    return '<tr class="click '+(p===petSel?'sel':'')+'" data-id="'+p.id+'"><td><span class="id">'+p.id+'</span></td><td><div style="display:flex;gap:9px;align-items:center"><span class="spi" style="--c:'+COL(p.s)+'" title="'+SP[p.s]+'">'+spIcon(p.s)+'</span><div><b>'+p.n+'</b><br><small style="color:var(--mut)">'+p.r+'</small></div></div></td><td>'+p.o+'</td><td>'+p.u+'</td></tr>';
+  }).join('');
+  renderFicha();stackTables();
+}
+var ftab='resumen';
+var PEX={
+ 'CAN-0241':{al:['!Alergia a penicilina','Postoperatorio'],wt:[29.4,29.9,30.2,30.8,31,31.2],soap:['Dueño reporta buen apetito y movilidad normal tras la cirugía.','Herida limpia, sin secreción. T° 38,5 °C.','Cicatrización adecuada, sin infección.','Retirar puntos en 7 días. Continuar analgesia 3 días.']},
+ 'FEL-0187':{al:['Esterilizada'],wt:[3.5,3.6,3.7,3.7,3.8,3.8],soap:['Control de rutina y refuerzo de vacunas.','T° 38,6 °C, mucosas rosadas.','Paciente sana.','Triple felina aplicada. Próximo refuerzo en febrero.']},
+ 'CAN-0239':{al:['!Puede morder','Displasia de cadera'],wt:[37.2,36.8,36.5,36.4,36.2,36],soap:['Cojera intermitente del miembro posterior, peor al levantarse.','Dolor a la extensión de cadera. Radiografía: displasia moderada.','Displasia de cadera grado II.','Meloxicam por 10 días, control de peso y fisioterapia.']},
+ 'FEL-0185':{al:['!Hospitalizado','Enfermedad renal'],wt:[5.2,5.1,4.9,4.8,4.7,4.6],soap:['Decaimiento y poca ingesta de agua desde hace 3 días.','Deshidratación 7 %. Creatinina elevada.','Insuficiencia renal crónica descompensada.','Fluidoterapia intravenosa y dieta renal. Reevaluar en 48 h.']},
+ 'CAN-0233':{al:['Cachorra'],wt:[14,17,19.5,21.5,23,24.5]},
+ 'AVE-0042':{al:[],wt:[.039,.04,.04,.04,.04,.04]},
+ 'ROE-0031':{al:[],wt:[.11,.115,.12,.12,.12,.12]},
+ 'REP-0012':{al:['Requiere calor controlado'],wt:[3.7,3.8,3.9,4,4,4.1]},
+ 'CAN-0228':{al:['Geriátrica','!Cardiopatía leve'],wt:[3.1,3.1,3,3,2.9,2.9]},
+ 'EXO-0009':{al:['Sensible al estrés'],wt:[1.5,1.5,1.55,1.6,1.6,1.6]},
+ 'FEL-0179':{al:[],wt:[5,5.1,5.1,5.2,5.2,5.2]},
+ 'CAN-0221':{al:['Control de peso'],wt:[14.2,14,13.8,13.7,13.5,13.4]}
+};
+function spark(a){
+  var w=240,h=56,mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),r=(mx-mn)||1;
+  var pts=a.map(function(v,i){return [8+i*(w-16)/(a.length-1),h-8-(v-mn)/r*(h-16)]});
+  var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}).join('');
+  var l=pts[pts.length-1];
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" style="max-width:240px" aria-label="Evolución del peso"><path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+l[0].toFixed(1)+'" cy="'+l[1].toFixed(1)+'" r="4.5" fill="var(--coral)"/></svg>';
+}
+function vacList(p){
+  var perro=[['Antirrábica','Nov 2025','Nov 2026'],['Séxtuple','Ago 2026','Ago 2027'],['Desparasitación','Sep 2026','Dic 2026']];
+  var gato=[['Triple felina','Feb 2026','Feb 2027'],['Antirrábica','Nov 2025','Nov 2026'],['Desparasitación','Sep 2026','Dic 2026']];
+  var l=p.s==='perro'?perro:p.s==='gato'?gato:[];
+  return l.map(function(v){
+    var st='<span class="pill p-ok">Al día</span>';
+    if(/vence 20 nov/.test(p.vac)&&v[0]==='Antirrábica')st='<span class="pill p-warn">Vence 20 nov</span>';
+    if(/vencida/i.test(p.vac)&&v[0]==='Triple felina')st='<span class="pill p-bad">Vencida</span>';
+    return '<tr><td><b>'+v[0]+'</b></td><td>'+v[1]+'</td><td>'+v[2]+'</td><td>'+st+'</td></tr>';
+  }).join('');
+}
+function tipo(t){
+  if(/cirug|esteriliz|limpieza dental/i.test(t))return '<span class="tp c">Cirugía</span>';
+  if(/vacuna|triple|séxtuple/i.test(t))return '<span class="tp v">Vacunación</span>';
+  if(/consulta|control|revisión/i.test(t))return '<span class="tp">Consulta</span>';
+  return '<span class="tp">Procedimiento</span>';
+}
+function soapHtml(p){
+  var x=PEX[p.id]||{},so=x.soap||['Motivo: '+p.h[0][1]+'.','Peso '+p.w+'. Examen físico sin hallazgos relevantes.','Paciente estable.','Control según indicación del veterinario.'];
+  var L=['S','O','A','P'];
+  return '<div class="soap">'+so.map(function(t,i){return '<div><b>'+L[i]+'</b><span>'+t+'</span></div>'}).join('')+'</div>';
+}
+function renderFicha(){
+  var p=petSel;if(!p)return;
+  var x=PEX[p.id]||{al:[],wt:[1,1]};
+  var tot=p.h.reduce(function(a,y){return a+y[2]},0);
+  var h='<button class="btn fclose">‹ Volver a la lista</button>'+
+   '<div class="pheader"><span class="spi lg" style="--c:'+COL(p.s)+'">'+spIcon(p.s)+'</span><div style="min-width:0"><h2>'+p.n+'</h2><div style="color:var(--mut)">'+SP[p.s]+' · '+p.r+' · '+p.sx+' · '+p.e+'</div><div style="margin-top:5px"><span class="id">'+p.id+'</span></div></div></div>'+
+   '<div class="alerts">'+x.al.map(function(a){var b=a.charAt(0)==='!';return '<span class="al '+(b?'bad':'')+'">'+esc(b?a.slice(1):a)+'</span>'}).join('')+'</div>'+
+   '<div class="ftabs">'+[['resumen','Resumen'],['historia','Historia clínica'],['vacunas','Vacunas'],['cobros','Cobros']].map(function(t){return '<button class="ftab '+(t[0]===ftab?'on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>';
+  if(ftab==='resumen'){
+    h+='<div class="facts"><div><span>Dueño</span><b>'+p.o+'</b></div><div><span>Teléfono</span>'+p.t+'</div><div><span>Peso actual</span><b>'+p.w+'</b></div><div><span>Microchip</span>'+p.chip+'</div></div>'+
+     '<div class="wt"><div><div class="sub" style="margin:0">Evolución del peso</div><div style="font-size:12px;color:var(--mut)">Últimas 6 consultas</div></div>'+spark(x.wt)+'</div>'+
+     '<div class="sub">Última nota clínica (SOAP)</div>'+soapHtml(p)+
+     '<div class="bal"><div><small style="color:var(--mut)">Facturado en el historial</small><br><b class="num">'+fUsd(tot)+'</b></div><div style="text-align:right"><small style="color:var(--mut)">Saldo pendiente</small><br>'+(p.bal?'<b class="num" style="color:var(--bad)">'+fUsd(p.bal)+'</b> <span class="bsv num">'+fBs(p.bal*rate)+'</span>':'<b style="color:var(--ok)">Sin deuda</b>')+'</div></div>';
+  }else if(ftab==='historia'){
+    h+='<div class="sub" style="margin-top:0">Nota más reciente (SOAP)</div>'+soapHtml(p)+'<div class="sub">Historial</div><ul class="tl">'+p.h.map(function(y){return '<li><time>'+y[0]+'</time><span>'+tipo(y[1])+' '+y[1]+'</span><b class="num">'+fUsd(y[2])+'</b></li>'}).join('')+'</ul>';
+  }else if(ftab==='vacunas'){
+    var v=vacList(p);
+    h+=v?'<div class="wrap"><table><thead><tr><th>Vacuna</th><th>Última</th><th>Próxima</th><th>Estado</th></tr></thead><tbody>'+v+'</tbody></table></div>':'<p style="color:var(--mut)">Esta especie no sigue el esquema de vacunas de perros y gatos. Se registra un control sanitario anual.</p>';
+    h+='<div class="sub">Próximo recordatorio</div><div>'+p.vac+'</div>';
+  }else{
+    h+='<div class="wrap"><table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">US$</th><th class="r">Bs</th></tr></thead><tbody>'+p.h.map(function(y){return '<tr><td>'+y[0]+'</td><td style="white-space:normal">'+y[1]+'</td><td class="r num">'+fUsd(y[2])+'</td><td class="r num bsv">'+fBs(y[2]*rate)+'</td></tr>'}).join('')+'</tbody></table></div>'+
+     '<div class="bal"><div><small style="color:var(--mut)">Total facturado</small><br><b class="num">'+fUsd(tot)+'</b></div><div style="text-align:right"><small style="color:var(--mut)">Saldo pendiente</small><br>'+(p.bal?'<b class="num" style="color:var(--bad)">'+fUsd(p.bal)+'</b> <span class="bsv num">'+fBs(p.bal*rate)+'</span>':'<b style="color:var(--ok)">Sin deuda</b>')+'</div></div>';
+  }
+  h+='<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn p">Nueva consulta</button><button class="btn">Agendar cita</button><button class="btn">Cobrar</button></div>';
+  $('ficha').innerHTML=h;
+  stackTables();
+}
+function renderCaja(){
+  $('cajaPet').innerHTML=spTag('gato')+'<span>Luna · FEL-0187 · Dueña: María Fernández</span>';
+  $('lines').innerHTML=CATALOGO.map(function(l,i){
+    return '<div class="line"><div><b>'+l.n+'</b><small>'+l.k+' · '+fUsd(l.u)+' c/u</small></div>'+
+      '<div class="step"><button data-i="'+i+'" data-d="-1" aria-label="Menos">−</button><span class="num">'+l.q+'</span><button data-i="'+i+'" data-d="1" aria-label="Más">+</button></div>'+
+      '<div class="a num" style="text-align:right"><b>'+fUsd(l.u*l.q)+'</b></div><div class="b num bsv" style="text-align:right">'+fBs(l.u*l.q*rate)+'</div></div>';
+  }).join('');
+  var t=CATALOGO.reduce(function(a,l){return a+l.u*l.q},0);
+  $('tUsd').textContent=fUsd(t);$('tBs').textContent=fBs(t*rate);
+  $('calc').textContent=fUsd(t)+' × '+rate.toLocaleString('es-VE',{minimumFractionDigits:2})+' Bs/US$ (BCV)';
+  $('methods').innerHTML=METODOS.map(function(m,i){return '<button class="m '+(i===metodo?'on':'')+'" data-m="'+i+'">'+m[0]+'<small>'+m[2]+'</small></button>'}).join('');
+  var isBs=METODOS[metodo][1]==='bs';
+  $('payinfo').innerHTML=isBs?'El cliente paga <b class="bsv num">'+fBs(t*rate)+'</b>. El recibo guarda la tasa de hoy y el equivalente en dólares.':'El cliente paga <b class="num" style="color:var(--ink)">'+fUsd(t)+'</b>. El recibo también muestra el equivalente en bolívares.';
+  $('rec').innerHTML='<b>RECIBO Nº 001284</b> · 12/11/2026 · 10:42<br>Paciente: Luna (FEL-0187) · Dueña: María Fernández<br>'+
+    CATALOGO.map(function(l){return l.q+' × '+l.n+' ......... '+fUsd(l.u*l.q)}).join('<br>')+
+    '<br>----------------------------------------<br><b>TOTAL '+fUsd(t)+' = '+fBs(t*rate)+'</b><br>Tasa BCV del día: '+rate.toLocaleString('es-VE',{minimumFractionDigits:2})+' · Método: '+METODOS[metodo][0];
+}
+function renderTablas(){
+  $('pagos').innerHTML=PAGOS.map(function(p){
+    var st=p[6]==='ok'?'<span class="pill p-ok">Pagado</span>':'<span class="pill p-warn">Parcial</span>';
+    return '<tr><td>'+p[0]+'</td><td><b>'+p[1]+'</b></td><td>'+p[2]+'</td><td>'+p[3]+'</td><td class="r num">'+fUsd(p[4])+'</td><td class="r num">'+p[5].toLocaleString('es-VE',{minimumFractionDigits:2})+'</td><td class="r num bsv">'+fBs(p[4]*p[5])+'</td><td>'+st+'</td></tr>';
+  }).join('');
+  var bs=PAGOS.filter(function(p){return /móvil|Punto|Bs/.test(p[3])}).reduce(function(a,p){return a+p[4]*p[5]},0)*6.8;
+  $('bsCob').textContent=fBs(bs);
+  $('inv').innerHTML=INV.map(function(i){
+    var pct=Math.min(100,i[3]/i[4]*100),cls=i[3]<=i[4]*.25?'low':i[3]<=i[4]*.5?'mid':'';
+    var st=cls==='low'?'<span class="pill p-bad">Stock bajo</span>':cls==='mid'?'<span class="pill p-warn">Reponer pronto</span>':'<span class="pill p-ok">Disponible</span>';
+    return '<tr><td><b>'+esc(i[0])+'</b></td><td>'+i[1]+'</td><td>'+i[2]+'</td><td><div style="display:flex;gap:8px;align-items:center"><div class="bar '+cls+'" style="width:90px"><i style="width:'+pct+'%"></i></div><span class="num">'+i[3]+'</span></div></td><td class="r num">'+fUsd(i[5])+'</td><td class="r num bsv">'+fBs(i[5]*rate)+'</td><td>'+st+'</td></tr>';
+  }).join('');
+  $('gas').innerHTML=GAS.map(function(g){return '<tr><td>'+g[0]+'</td><td style="white-space:normal;min-width:200px">'+g[1]+'</td><td><span class="pill p-info">'+g[2]+'</span></td><td class="r num">'+fUsd(g[3])+'</td><td class="r num bsv">'+fBs(g[3]*rate)+'</td></tr>'}).join('');
+  var mx=GCAT[0][1],tot=GCAT.reduce(function(a,g){return a+g[1]},0);
+  $('gcat').innerHTML=GCAT.map(function(g){return '<div class="hbar"><span>'+g[0]+'</span><div class="bar"><i style="width:'+g[1]/mx*100+'%"></i></div><b class="num">'+fUsd(g[1])+'</b></div>'}).join('');
+  $('gTot').innerHTML=fUsd(tot)+' <span class="bsv" style="font-size:13px">'+fBs(tot*rate)+'</span>';
+  var tm=TOP[0][1];
+  $('top').innerHTML=TOP.map(function(t){return '<div class="hbar" style="grid-template-columns:140px 1fr auto"><span>'+t[0]+'</span><div class="bar"><i style="width:'+t[1]/tm*100+'%"></i></div><b class="num">'+t[1]+'</b></div>'}).join('');
+}
+function renderChart(){
+  var W=560,H=250,L=40,B=28,T=10,max=10000,s='';
+  [0,2500,5000,7500,10000].forEach(function(v){var y=T+(H-T-B)*(1-v/max);s+='<line x1="'+L+'" x2="'+(W-8)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="var(--mut)">'+(v/1000)+'k</text>'});
+  var gw=(W-8-L)/MESES.length;
+  MESES.forEach(function(m,i){
+    var x=L+i*gw+gw*.2,bw=gw*.28;
+    [[m[1],'var(--chart1)',0],[m[2],'var(--chart2)',1]].forEach(function(b){
+      var h=(H-T-B)*b[0]/max;
+      s+='<rect x="'+(x+b[2]*(bw+4))+'" y="'+(H-B-h)+'" width="'+bw+'" height="'+h+'" rx="4" fill="'+b[1]+'"/>';
+    });
+    s+='<text x="'+(L+i*gw+gw/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="var(--mut)">'+m[0]+'</text>';
+  });
+  s+='<rect x="'+L+'" y="0" width="0" height="0"/>';
+  $('chart').innerHTML=s;
+}
+var FLOW=[
+ ['Sala de espera','#e0a030',[['Michi','gato','FEL-0185','Seguimiento hospitalario','Dr. Pérez','Espera 12 min'],['Canela','roedor','ROE-0031','Control de dermatitis','Dra. Mendoza','Espera 5 min'],['Simba','gato','FEL-0179','Vacuna triple','Dr. Pérez','Espera 2 min']],3],
+ ['En consulta','#dd4f33',[['Rocky','perro','CAN-0241','Revisión postoperatoria','Dra. Rojas','Desde 10:48'],['Zeus','reptil','REP-0012','Cirugía menor','Dra. Mendoza','Desde 08:05']],2],
+ ['Por cobrar','#0f7a73',[['Luna','gato','FEL-0187','Consulta y vacuna','Dra. Rojas',55],['Max','perro','CAN-0239','Radiografía de cadera','Dra. Rojas',55]],2],
+ ['Atendidos hoy','#8aa3a1',[['Kira','perro','CAN-0233','Vacuna séxtuple','Dra. Rojas','09:00'],['Bella','perro','CAN-0228','Control geriátrico','Dr. Pérez','08:30']],11]
+];
+function renderFlow(){
+  $('board').innerHTML=FLOW.map(function(c){
+    return '<div class="col2" style="--sc:'+c[1]+'"><div class="ch"><span><i></i>'+c[0]+'</span><span class="n">'+c[3]+'</span></div>'+c[2].map(function(k){
+      var last=typeof k[5]==='number'
+        ?'<div class="price"><b class="num">'+fUsd(k[5])+'</b> <span class="bsv num">'+fBs(k[5]*rate)+'</span></div><button class="btn p" data-go="caja">Cobrar</button>'
+        :'<div class="meta"><span>'+k[4]+'</span><span>'+k[5]+'</span></div>';
+      return '<div class="pc"><div class="t"><span class="spi" style="--c:'+COL(k[1])+'">'+spIcon(k[1])+'</span><div><b>'+k[0]+'</b><small>'+k[2]+'</small></div></div><div class="why">'+k[3]+'</div>'+last+'</div>';
+    }).join('')+'</div>';
+  }).join('');
+}
+function renderExtra(){
+  renderFlow();
+  var q=($('qd').value||'').toLowerCase();
+  $('duenos').innerHTML=DUENOS.filter(function(d){return (d[0]+d[1]+d[2]).toLowerCase().indexOf(q)>-1}).map(function(d){
+    return '<tr><td><b>'+d[0]+'</b></td><td>'+d[1]+'</td><td>'+d[2]+'</td><td>'+d[3]+'</td><td class="r num">'+(d[4]?'<b style="color:var(--bad)">'+fUsd(d[4])+'</b>':'<span style="color:var(--ok)">Sin deuda</span>')+'</td><td class="r num bsv">'+(d[4]?fBs(d[4]*rate):'—')+'</td></tr>';
+  }).join('');
+  $('hosp').innerHTML=HOSP.map(function(h){
+    return '<div class="card hosp"><div class="hh"><div><div class="box">'+h[0]+' · '+h[4]+'</div><h3 style="margin:2px 0 0;font-size:18px">'+h[1]+'</h3></div><span class="pill '+h[7]+'">'+h[6]+'</span></div>'+
+      spTag(h[2])+'<div>'+h[3]+'</div><div style="color:var(--mut);font-size:12.5px">'+h[5]+' · Próximo: '+h[8]+'</div>'+
+      '<div class="bal" style="margin-top:4px"><span>Acumulado</span><span><b class="num">'+fUsd(h[9])+'</b> <span class="bsv num">'+fBs(h[9]*rate)+'</span></span></div></div>';
+  }).join('')+'<div class="card hosp free"><div><b>Box 3 disponible</b><br><small>Sin paciente asignado</small><br><br><button class="btn p">+ Internar paciente</button></div></div>';
+  $('vacs').innerHTML=VACREC.map(function(v){
+    return '<tr><td><b>'+v[0]+'</b> '+spTag(v[1])+'</td><td>'+v[2]+'</td><td>'+v[3]+'</td><td>'+v[4]+'</td><td><span class="pill '+v[5]+'">'+v[6]+'</span></td><td>'+(v[5]==='p-ok'?'':'<button class="btn" data-toast="Recordatorio enviado a '+v[2]+' (demo)">WhatsApp</button>')+'</td></tr>';
+  }).join('');
+  $('cxc').innerHTML=CXC.map(function(c){
+    var sd=c[4]-c[5];
+    return '<tr><td>'+c[0]+'</td><td><b>'+c[1]+'</b></td><td>'+c[2]+'</td><td>'+c[3]+'</td><td class="r num">'+fUsd(c[4])+'</td><td class="r num">'+fUsd(c[5])+'</td><td class="r num"><b style="color:var(--bad)">'+fUsd(sd)+'</b></td><td class="r num bsv">'+fBs(sd*rate)+'</td><td><button class="btn p" data-go="caja">Cobrar</button></td></tr>';
+  }).join('');
+  $('prov').innerHTML=PROV.map(function(p){
+    return '<tr><td><b>'+p[0]+'</b></td><td>'+p[1]+'</td><td>'+p[2]+'</td><td>'+p[3]+'</td><td class="r num">'+(p[4]?fUsd(p[4]):'—')+'</td><td class="r num bsv">'+(p[4]?fBs(p[4]*rate):'—')+'</td></tr>';
+  }).join('');
+  $('users').innerHTML=USERS.map(function(u){
+    return '<tr><td><b>'+u[0]+'</b></td><td>'+u[1]+'</td><td style="white-space:normal;min-width:180px">'+u[2]+'</td><td>'+u[3]+'</td><td><span class="pill '+u[4]+'">'+u[5]+'</span></td></tr>';
+  }).join('');
+  $('cfgRate').textContent='Bs '+rate.toLocaleString('es-VE',{minimumFractionDigits:2})+' / US$';
+  $('tasas').innerHTML=TASAS.map(function(t,i){
+    var prev=TASAS[i+1],v=prev?(t[1]/prev[1]-1)*100:0;
+    return '<tr><td>'+t[0]+'</td><td class="r num">'+t[1].toLocaleString('es-VE',{minimumFractionDigits:2})+'</td><td class="r num '+(v>0?'up':'')+'">'+(prev?'+'+v.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2})+'%':'—')+'</td></tr>';
+  }).join('');
+}
+function stackTables(){
+  document.querySelectorAll('table').forEach(function(t){
+    var hs=[].map.call(t.querySelectorAll('thead th'),function(h){return h.textContent});
+    t.classList.add('stack');
+    t.querySelectorAll('tbody tr').forEach(function(r){[].forEach.call(r.children,function(td,i){if(hs[i])td.dataset.label=hs[i]})});
+  });
+}
+function renderAll(){renderExtra();renderMoney();renderResumen();renderAgenda();renderPets();renderCaja();renderTablas();renderChart();stackTables()}
+
+/* ---------- Eventos ---------- */
+$('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;petFilter=b.dataset.k;var l=PETS.filter(function(p){return petFilter==='todos'||p.s===petFilter});if(l.indexOf(petSel)<0)petSel=l[0];renderPets()});
+$('pets').addEventListener('click',function(e){var r=e.target.closest('tr');if(!r)return;petSel=PETS.filter(function(p){return p.id===r.dataset.id})[0];renderPets();if(isMobile())$('ficha').classList.add('open');$('ficha').scrollTop=0});
+$('lines').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var l=CATALOGO[+b.dataset.i];l.q=Math.max(0,l.q+(+b.dataset.d));renderCaja()});
+$('methods').addEventListener('click',function(e){var b=e.target.closest('.m');if(!b)return;metodo=+b.dataset.m;renderCaja()});
+$('pay').addEventListener('click',function(){var t=CATALOGO.reduce(function(a,l){return a+l.u*l.q},0);toast(METODOS[metodo][1]==='bs'?'Pago registrado: '+fBs(t*rate)+' ('+fUsd(t)+')':'Pago registrado: '+fUsd(t))});
+$('rate').addEventListener('input',function(){
+  var raw=this.value.trim(),v=parseFloat(raw.indexOf(',')>-1?raw.replace(/\./g,'').replace(',','.'):raw);
+  if(v>0){rate=v;renderAll()}
+});
+function openDrawer(){$('drawer').classList.add('on');$('scrim').classList.add('on')}
+function closeDrawer(){$('drawer').classList.remove('on');$('scrim').classList.remove('on')}
+$('tabbar').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.more)openDrawer();else location.hash=b.dataset.v});
+$('drawer').addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(b){location.hash=b.dataset.v;closeDrawer()}if(e.target.closest('.dclose'))closeDrawer()});
+$('scrim').addEventListener('click',closeDrawer);
+$('ham').addEventListener('click',openDrawer);
+$('ficha').addEventListener('click',function(e){if(e.target.closest('.fclose'))$('ficha').classList.remove('open');var t=e.target.closest('.ftab');if(t){ftab=t.dataset.t;renderFicha()}});
+$('gq').addEventListener('input',function(){petQ=this.value.trim().toLowerCase();if(petQ&&cur!=='mascotas')location.hash='mascotas';renderPets()});
+$('agchips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;agVet=b.dataset.a==='all'?'all':+b.dataset.a;renderAgenda()});
+$('qd').addEventListener('input',function(){renderExtra();renderMoney();stackTables()});
+window.addEventListener('resize',function(){if(isMobile()!==lastMob){renderAgenda();if(!isMobile())$('ficha').classList.remove('open')}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDrawer();$('ficha').classList.remove('open')}});
+document.addEventListener('click',function(e){
+  var sw=e.target.closest('.sw');if(sw){sw.classList.toggle('on');return}
+  var g=e.target.closest('[data-go]');if(g){location.hash=g.dataset.go;return}
+  var t=e.target.closest('[data-toast]');if(t){toast(t.dataset.toast);return}
+  var b=e.target.closest('.btn');if(b&&!b.closest('.ficha')&&b.id!=='pay'&&!b.classList.contains('dclose')&&!b.classList.contains('fclose'))toast('Acción de demostración')
+});
+$('rdate').textContent='Jueves 12 nov · 08:00';
+buildNav();renderAll();go(location.hash.slice(1)||'resumen');
+</script>
